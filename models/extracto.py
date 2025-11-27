@@ -605,8 +605,6 @@ class ExtractosExtracto(models.Model):
         Por favor, asocia cada concepto con la operación correspondiente basándote en los nombres de los intervinientes.
         Los nombres pueden estar escritos de forma diferente, así que busca similitudes y coincidencias.
         Devuelve SOLO el JSON con las asociaciones, sin texto adicional."""
-        _logger.info(user_prompt)
-        _logger.info(system_prompt)
         # Llamar al servicio de ChatGPT
         try:
             chatgpt_service = self.env['chatgpt.service']
@@ -696,16 +694,17 @@ class ExtractosExtracto(models.Model):
             if errores:
                 mensaje += '\n\nErrores:\n' + '\n'.join(errores[:5])
             
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Asociación con IA completada'),
-                    'message': mensaje,
-                    'type': 'success' if asignadas > 0 else 'warning',
-                    'sticky': bool(errores),
-                }
-            }
+            # return {
+            #     'type': 'ir.actions.client',
+            #     'tag': 'display_notification',
+            #     'params': {
+            #         'title': _('Asociación con IA completada'),
+            #         'message': mensaje,
+            #         'type': 'success' if asignadas > 0 else 'warning',
+            #         'sticky': bool(errores),
+            #     }
+            # }
+            return True
             
         except UserError:
             raise
