@@ -42,7 +42,7 @@ class ExtractosExtractoLinea(models.Model):
     prestamo_id = fields.Many2one(
         'linx.prestamo',
         string='Préstamo',
-        domain="[('prestamista_id', '=', prestamista_id)]",
+        domain="[('prestamista_ids.partner_id', '=', prestamista_id)]",
         help='Préstamo al que se asignará este pago'
     )
     
@@ -60,8 +60,8 @@ class ExtractosExtractoLinea(models.Model):
     revisado = fields.Boolean(string='Revisado', default=False)
     
     # Campos para distribución
-    fecha_contable = fields.Date(string='Fecha Contable', default=lambda self: fields.Date.today())
-    fecha_contable_alternativa = fields.Date(string='Fecha Cont. Efect.')
+    # fecha_contable = fields.Date(string='Fecha Contable', default=lambda self: fields.Date.today())
+    # fecha_contable_alternativa = fields.Date(string='Fecha Cont. Efect.')
     fecha_calculo = fields.Date(string='Fecha Cálculo', default=lambda self: fields.Date.today())
     aplicar_penalizaciones = fields.Boolean(string='Aplicar Penalizaciones', default=True)
     aplicar_moras = fields.Boolean(string='Aplicar Moras', default=True)
@@ -235,10 +235,10 @@ class ExtractosExtractoLinea(models.Model):
         
         if not self.prestamo_id:
             return
-        if not self.fecha_contable:
+        if not self.fecha:
             return
         
-        self.write({'fecha_calculo': self.fecha_calculo or self.fecha_contable})
+        self.write({'fecha_calculo': self.fecha})
         _logger.debug('ActualizaListaDistribucion %s' % self.prestamo_id.name)
         
         items = []
@@ -460,7 +460,7 @@ class ExtractosExtractoLinea(models.Model):
         # Crear linx.pago
         pago_vals = {
             'prestamo_id': self.prestamo_id.id,
-            'fecha': self.fecha_contable_alternativa or self.fecha_contable or self.fecha,
+            'fecha': self.fecha_calculo or self.fecha,
             'importe': self.importe,
             'comentarios': self.observaciones or self.concepto or '',
             'currency_id': self.currency_id.id,
@@ -488,7 +488,7 @@ class ExtractosExtractoLinea(models.Model):
                 'importe': dist.importe_pagado,
                 'tipo': tipo,
                 'concepto_id': dist.concepto_id.id if dist.concepto_id else False,
-                'fecha': self.fecha_contable_alternativa or self.fecha_contable or self.fecha,
+                'fecha': self.fecha_calculo or self.fecha,
                 'fecha_cuota': dist.cuota_id.fecha if dist.cuota_id else False,
             })
         

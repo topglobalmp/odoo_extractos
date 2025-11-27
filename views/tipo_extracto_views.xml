@@ -34,6 +34,16 @@
                                 <field name="usecols" placeholder="Ej: C:M"/>
                             </group>
                         </group>
+                        <group string="Configuración de Columnas">
+                            <group>
+                                <field name="columna_fecha" placeholder="Ej: A, B, C"/>
+                                <field name="columna_importe" placeholder="Ej: A, B, C"/>
+                            </group>
+                            <group>
+                                <field name="columna_concepto" placeholder="Ej: A, B, C"/>
+                                <field name="columna_ordenante" placeholder="Ej: A, B, C (Opcional)"/>
+                            </group>
+                        </group>
                     </sheet>
                 </form>
             </field>

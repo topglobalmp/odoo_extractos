@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <menuitem id="menu_extractos_root" name="Extractos" sequence="50"/>
+        <menuitem id="menu_extractos_root" 
+                  name="Extractos Bancarios" 
+                  sequence="50"
+                  web_icon="extractos,static/description/icon.png"/>
         
         <menuitem id="menu_extractos_carteras" 
                   name="Carteras" 

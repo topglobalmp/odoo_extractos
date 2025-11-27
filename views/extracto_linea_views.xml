@@ -8,6 +8,9 @@
                 <form string="Distribución del pago">
                     <sheet style="overflow-x:hidden;">
                         <field name="currency_id" invisible="1" />
+                        <field name="prestamista_id" invisible="1" column_invisible="1" />
+                        <field name="extracto_id" invisible="1" column_invisible="1" />
+                        <field name="state" invisible="1" column_invisible="1" />
                         <style>
                             @media (min-width: 475px) {
                                 .o_form_view .o_field_text.oe_inline {
@@ -53,15 +56,14 @@
                         <group col="3">
                             <group>
                                 <group colspan="2">
-                                    <field name="fecha_contable" string="Fecha Cont.Real" readonly="True"/>
-                                    <field name="fecha_contable_alternativa" string="Fecha Cont.Efect."/>
+                                    <field name="fecha" string="Fecha" readonly="True"/>
                                 </group>
                                 <group colspan="2" col="4">
                                     <group colspan="3">
                                         <field name="fecha_calculo"/>
                                     </group>
                                     <group class="d-inline-block">
-                                        <button type="object" icon="fa-floppy-o" name="actualiza_lista_distribucion_wrapper" class="btn-primary"/>
+                                        <button type="object" icon="fa-refresh" name="actualiza_lista_distribucion_wrapper" class="btn-primary"/>
                                     </group>
                                 </group>
                             </group>
@@ -71,7 +73,7 @@
                                         <field name="prestamo_id" options="{'no_create': True, 'no_create_edit':True, 'no_open': False}" decoration-bg-danger="not prestamo_id"/>
                                     </group>
                                     <group class="d-inline-block">
-                                        <button type="object" icon="fa-floppy-o" name="actualiza_lista_distribucion_wrapper" class="btn-primary"/>
+                                        <button type="object" icon="fa-refresh" name="actualiza_lista_distribucion_wrapper" class="btn-primary"/>
                                     </group>
                                 </group>
                                 <group colspan="2">
@@ -84,23 +86,19 @@
                                     <group>
                                         <field name="importe" string="Importe" widget="monetary" class="oe_inline" readonly="True"/>
                                     </group>
+                                    <group colspan="2">
+                                        <field name="observaciones" class="oe_inline w-100 postit"/>
+                                    </group>
                                 </group>
-                                <group colspan="2">
+                                <!-- <group colspan="2">
                                     <field name="revisado" invisible="True"/>
                                     <button name="action_marcar_revisado" colspan="2" invisible="revisado == True" icon="fa-thumbs-o-up" data-hotkey="o" class="btn btn-outline-dark float-end me-4" type="object"/>
                                     <button name="action_marcar_revisado" colspan="2" invisible="revisado == False" icon="fa-thumbs-o-up" data-hotkey="o" class="btn btn-success float-end me-4" type="object"/>
-                                </group>
+                                </group> -->
                             </group>
-                        </group>
-                        
-                        <group col="3">
-                            <group colspan="2">
-                                <field name="observaciones" class="oe_inline w-100 postit"/>
-                            </group>
-                        </group>
-                        
-                        <group string="Distribución" style="max-height:300px; overflow-x:auto;">
-                            <group colspan="2">
+                        </group>                        
+                        <group string="Distribución" >
+                            <group colspan="2" style="max-height:300px; overflow-x:auto;">
                                 <field name="distribucion_ids" colspan="2" nolabel="1" domain="[('importe_pagado', '!=', False),('importe_pagado','&gt;',0)]">
                                     <tree limit="500" domain="[('importe_pagado', '!=', False),('importe_pagado','&gt;',0)]"
                                         decoration-bg-success="importe_pagado &gt; 0 and (importe_pagado == importe or ((importe_pagado - importe) &gt; 0 and (importe_pagado - importe) &lt; 0.02) or ((importe - importe_pagado) &gt; 0 and (importe - importe_pagado) &lt; 0.02))"

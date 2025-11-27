@@ -39,4 +39,13 @@ class ExtractosExtractoLineaDistribucion(models.Model):
     enabled = fields.Boolean(string='Habilitado', default=True)
     extraordinario = fields.Boolean(string='Extraordinario', default=False)
     pagado_parcial = fields.Boolean(string='Pago Parcial', default=False)
+    
+    def action_eliminar(self):
+        """Elimina una línea de distribución y recalcula"""
+        linea = self.linea_id
+        self.unlink()
+        if linea:
+            linea.actualiza_lista_distribucion()
+            return linea.open_action_distribucion()
+        return True
 

@@ -10,9 +10,9 @@
                     <field name="fecha"/>
                     <field name="cartera_id"/>
                     <field name="prestamista_id"/>
-                    <field name="lineas_pendientes"/>
-                    <field name="lineas_descartadas"/>
-                    <field name="lineas_procesadas"/>
+                    <field name="count_lineas_pendientes"/>
+                    <field name="count_lineas_descartadas"/>
+                    <field name="count_lineas_procesadas"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -27,6 +27,7 @@
                         <button name="action_importar" string="Importar Archivo" type="object" class="oe_highlight" invisible="state != 'draft'"/>
                         <button name="action_usar_inteligencia_artificial" string="Usar Inteligencia Artificial" type="object" class="btn-primary" invisible="state != 'imported' or not tiene_lineas_pendientes_sin_prestamo"/>
                         <field name="state" widget="statusbar"/>
+                        <field name="tiene_lineas_pendientes_sin_prestamo" invisible="1"/>
                     </header>
                     <sheet>
                         <group>
@@ -44,35 +45,40 @@
                         </group>
                         <notebook>
                             <page string="Líneas Pendientes" name="pending">
-                                <field name="linea_ids" domain="[('state', '=', 'pending')]" context="{'default_state': 'pending'}">
-                                    <tree decoration-info="auto_asignado == True" decoration-muted="state == 'discarded'">
+                                <field name="lineas_pendientes" context="{'default_state': 'pending'}" readonly="0">
+                                    <tree decoration-info="auto_asignado == True" limit="500" delete="false" create="false">
                                         <field name="fecha"/>
+                                        <field name="currency_id" column_invisible="True" />
                                         <field name="importe" widget="monetary"/>
                                         <field name="concepto"/>
                                         <field name="observaciones"/>
                                         <field name="prestamo_id" options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="auto_asignado"/>
                                         <field name="revisado" widget="boolean_toggle"/>
-                                        <field name="state"/>
+                                        <field name="state" column_invisible="True"/>
                                         <button name="open_action_distribucion" string="Distribuir" type="object" icon="fa-list" invisible="state != 'pending' or not prestamo_id"/>
                                         <button name="action_descartar" string="Descartar" type="object" icon="fa-trash" invisible="state != 'pending'"/>
                                     </tree>
                                 </field>
                             </page>
                             <page string="Líneas Descartadas" name="discarded">
-                                <field name="linea_ids" domain="[('state', '=', 'discarded')]">
-                                    <tree decoration-muted="True">
+                                <field name="lineas_descartadas" context="{'default_state': 'discarded'}" readonly="0">
+                                    <tree decoration-muted="True" limit="500" delete="false" create="false" >
+                                        <field name="currency_id" column_invisible="True" />
                                         <field name="fecha"/>
                                         <field name="importe" widget="monetary"/>
                                         <field name="concepto"/>
                                         <field name="observaciones"/>
-                                        <button name="action_restaurar" string="Restaurar" type="object" icon="fa-undo"/>
+                                        <field name="state" column_invisible="True"/>
+                                        <button name="action_restaurar" string="Restaurar" type="object" icon="fa-undo" invisible="state != 'discarded'"/>
                                     </tree>
                                 </field>
                             </page>
+
                             <page string="Líneas Procesadas" name="processed">
-                                <field name="linea_ids" domain="[('state', '=', 'processed')]" readonly="1">
-                                    <tree>
+                                <field name="lineas_procesadas" readonly="1">
+                                    <tree limit="500" delete="false" create="false">
+                                        <field name="currency_id" column_invisible="True" />
                                         <field name="fecha"/>
                                         <field name="importe" widget="monetary"/>
                                         <field name="concepto"/>

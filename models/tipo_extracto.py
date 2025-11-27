@@ -35,6 +35,26 @@ class ExtractosTipoExtracto(models.Model):
         help='Rango de columnas a usar (ej: C:M para columnas C a M). Dejar vacío para usar todas las columnas'
     )
     
+    columna_fecha = fields.Char(
+        string='Columna Fecha',
+        help='Letra de la columna donde está la fecha (ej: A, B, C, etc.)'
+    )
+    
+    columna_importe = fields.Char(
+        string='Columna Importe',
+        help='Letra de la columna donde está el importe (ej: A, B, C, etc.)'
+    )
+    
+    columna_concepto = fields.Char(
+        string='Columna Concepto',
+        help='Letra de la columna donde está el concepto (ej: A, B, C, etc.)'
+    )
+    
+    columna_ordenante = fields.Char(
+        string='Columna Ordenante',
+        help='Letra de la columna donde está el ordenante/interviniente (ej: A, B, C, etc.). Opcional'
+    )
+    
     active = fields.Boolean(string='Activo', default=True)
     
     extracto_ids = fields.One2many('extractos.extracto', 'tipo_extracto_id', string='Extractos')

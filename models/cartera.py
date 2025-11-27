@@ -8,7 +8,7 @@ class ExtractosCartera(models.Model):
     _description = 'Cartera de Extractos'
     _order = 'name'
 
-    name = fields.Char(string='Nombre', required=True, compute='_compute_name', store=True)
+    name = fields.Char(string='Nombre', compute='_compute_name', store=True, default='Nueva Cartera', readonly=False)
     prestamista_id = fields.Many2one(
         'res.partner',
         string='Prestamista',
@@ -28,13 +28,26 @@ class ExtractosCartera(models.Model):
     
     active = fields.Boolean(string='Activo', default=True)
     
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Asegura que el nombre se establezca durante la creación"""
+        for vals in vals_list:
+            if 'name' not in vals or not vals.get('name'):
+                if vals.get('prestamista_id') and vals.get('tipo_extracto_id'):
+                    prestamista = self.env['res.partner'].browse(vals['prestamista_id'])
+                    tipo_extracto = self.env['extractos.tipo_extracto'].browse(vals['tipo_extracto_id'])
+                    vals['name'] = f"{prestamista.name} - {tipo_extracto.name}"
+                else:
+                    vals['name'] = 'Nueva Cartera'
+        return super().create(vals_list)
+    
     @api.depends('prestamista_id', 'tipo_extracto_id')
     def _compute_name(self):
         for record in self:
             if record.prestamista_id and record.tipo_extracto_id:
                 record.name = f"{record.prestamista_id.name} - {record.tipo_extracto_id.name}"
-            else:
-                record.name = _('Nueva Cartera')
+            elif not record.name or record.name == 'Nueva Cartera':
+                record.name = 'Nueva Cartera'
     
     @api.depends('extracto_ids')
     def _compute_extracto_count(self):
