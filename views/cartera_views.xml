@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_cartera_tree" model="ir.ui.view">
+            <field name="name">extractos.cartera.tree</field>
+            <field name="model">extractos.cartera</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="prestamista_id"/>
+                    <field name="tipo_extracto_id"/>
+                    <field name="extracto_count"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_cartera_form" model="ir.ui.view">
+            <field name="name">extractos.cartera.form</field>
+            <field name="model">extractos.cartera</field>
+            <field name="arch" type="xml">
+                <form string="Cartera">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="prestamista_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="tipo_extracto_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="active" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="extracto_ids" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="fecha"/>
+                                    <field name="lineas_pendientes"/>
+                                    <field name="lineas_descartadas"/>
+                                    <field name="lineas_procesadas"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_cartera" model="ir.actions.act_window">
+            <field name="name">Carteras</field>
+            <field name="res_model">extractos.cartera</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>
+

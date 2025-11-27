@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tipo_extracto_user,extractos.tipo_extracto.user,model_extractos_tipo_extracto,base.group_user,1,1,1,1
+access_cartera_user,extractos.cartera.user,model_extractos_cartera,base.group_user,1,1,1,1
+access_extracto_user,extractos.extracto.user,model_extractos_extracto,base.group_user,1,1,1,1
+access_extracto_linea_user,extractos.extracto_linea.user,model_extractos_extracto_linea,base.group_user,1,1,1,1
+access_extracto_linea_distribucion_user,extractos.extracto_linea_distribucion.user,model_extractos_extracto_linea_distribucion,base.group_user,1,1,1,1
+

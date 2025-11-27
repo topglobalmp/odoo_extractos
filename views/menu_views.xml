@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_extractos_root" name="Extractos" sequence="50"/>
+        
+        <menuitem id="menu_extractos_carteras" 
+                  name="Carteras" 
+                  parent="menu_extractos_root" 
+                  action="action_cartera" 
+                  sequence="10"/>
+        
+        <menuitem id="menu_extractos_extractos" 
+                  name="Extractos" 
+                  parent="menu_extractos_root" 
+                  action="action_extracto" 
+                  sequence="20"/>
+        
+        <menuitem id="menu_extractos_tipos" 
+                  name="Tipos de Extracto" 
+                  parent="menu_extractos_root" 
+                  action="action_tipo_extracto" 
+                  sequence="30"/>
+    </data>
+</odoo>
+

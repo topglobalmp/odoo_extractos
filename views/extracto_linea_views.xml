@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_extracto_linea_distribucion_form" model="ir.ui.view">
+            <field name="name">extractos.extracto_linea.distribucion.form</field>
+            <field name="model">extractos.extracto_linea</field>
+            <field name="arch" type="xml">
+                <form string="Distribución del pago">
+                    <sheet style="overflow-x:hidden;">
+                        <field name="currency_id" invisible="1" />
+                        <style>
+                            @media (min-width: 475px) {
+                                .o_form_view .o_field_text.oe_inline {
+                                    width: 100% !important;
+                                }
+                            }
+                            .text-bg-success{
+                                color: #155724 !important;
+                                background-color: #d4edda !important;
+                                border-color: #28a745 !important;
+                            }
+                            .text-bg-success td {
+                                border-top: 1px solid #28a745 !important;
+                            }
+                            .text-bg-info { 
+                                color: #0c5460 !important;
+                                background-color: #d1ecf1 !important;
+                                border-color: #17a2b8 !important;
+                            }
+                            .text-bg-info td {
+                                border-top: 1px solid #17a2b8 !important;
+                            }
+                            .text-bg-danger {
+                                color: #721c24 !important;
+                                background-color: #f8d7da !important;
+                                border-color: #f5c6cb !important;
+                            }
+                            .text-bg-warning {
+                                display:none;
+                                color: #856404 !important;
+                                background-color: #fff3cd !important;
+                                border-color: #ffeeba !important;
+                            }
+                            .text-bg-secondary {
+                                color: #383d41 !important;
+                                background-color: #e2e3e5 !important;
+                                border-color: #d6d8db !important;
+                            }
+                            .o_form_view .o_form_sheet{
+                                padding: 0px !important;
+                            }
+                        </style>
+                        <group col="3">
+                            <group>
+                                <group colspan="2">
+                                    <field name="fecha_contable" string="Fecha Cont.Real" readonly="True"/>
+                                    <field name="fecha_contable_alternativa" string="Fecha Cont.Efect."/>
+                                </group>
+                                <group colspan="2" col="4">
+                                    <group colspan="3">
+                                        <field name="fecha_calculo"/>
+                                    </group>
+                                    <group class="d-inline-block">
+                                        <button type="object" icon="fa-floppy-o" name="actualiza_lista_distribucion_wrapper" class="btn-primary"/>
+                                    </group>
+                                </group>
+                            </group>
+                            <group colspan="1">
+                                <group colspan="2" col="4">
+                                    <group colspan="3">
+                                        <field name="prestamo_id" options="{'no_create': True, 'no_create_edit':True, 'no_open': False}" decoration-bg-danger="not prestamo_id"/>
+                                    </group>
+                                    <group class="d-inline-block">
+                                        <button type="object" icon="fa-floppy-o" name="actualiza_lista_distribucion_wrapper" class="btn-primary"/>
+                                    </group>
+                                </group>
+                                <group colspan="2">
+                                    <field name="aplicar_penalizaciones" string="Aplicar Penaliz." class="oe_inline"/>
+                                    <field name="aplicar_moras" string="Aplicar Moras" class="oe_inline"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group colspan="2">
+                                    <group>
+                                        <field name="importe" string="Importe" widget="monetary" class="oe_inline" readonly="True"/>
+                                    </group>
+                                </group>
+                                <group colspan="2">
+                                    <field name="revisado" invisible="True"/>
+                                    <button name="action_marcar_revisado" colspan="2" invisible="revisado == True" icon="fa-thumbs-o-up" data-hotkey="o" class="btn btn-outline-dark float-end me-4" type="object"/>
+                                    <button name="action_marcar_revisado" colspan="2" invisible="revisado == False" icon="fa-thumbs-o-up" data-hotkey="o" class="btn btn-success float-end me-4" type="object"/>
+                                </group>
+                            </group>
+                        </group>
+                        
+                        <group col="3">
+                            <group colspan="2">
+                                <field name="observaciones" class="oe_inline w-100 postit"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Distribución" style="max-height:300px; overflow-x:auto;">
+                            <group colspan="2">
+                                <field name="distribucion_ids" colspan="2" nolabel="1" domain="[('importe_pagado', '!=', False),('importe_pagado','&gt;',0)]">
+                                    <tree limit="500" domain="[('importe_pagado', '!=', False),('importe_pagado','&gt;',0)]"
+                                        decoration-bg-success="importe_pagado &gt; 0 and (importe_pagado == importe or ((importe_pagado - importe) &gt; 0 and (importe_pagado - importe) &lt; 0.02) or ((importe - importe_pagado) &gt; 0 and (importe - importe_pagado) &lt; 0.02))"
+                                        decoration-bg-info="importe_pagado &gt; 0 and (importe_pagado + 0.01) &lt; importe" 
+                                        decoration-bg-warning="importe_pagado == 0"
+                                        edit="true" editable="bottom" create="false" delete="false" default_order="extraordinario desc,orden asc">
+                                        <field name="orden" widget="handle"/>
+                                        <field name="currency_id" column_invisible="True"/>
+                                        <field name="fecha_pago" string="Fecha Pago" column_invisible="True" readonly="True"/>
+                                        <field name="fecha" string="Fecha cuota" readonly="True"/>
+                                        <field name="importe" widget="monetary"/>
+                                        <field name="importe_pagado" widget="monetary" sum="total"/>
+                                        <field name="concepto_id" options="{'no_create': True, 'no_create_edit':True, 'no_open': True}"/>
+                                        <field name="pagado_parcial" column_invisible="True" readonly="True"/>
+                                        <field name="enabled" widget="checkbox" class="text-center"/>
+                                        <field name="extraordinario" column_invisible="True"/>
+                                        <field name="cuota_id" column_invisible="True"/>
+                                        <button class="fa fa-trash-o float-end" style="color:black" name="action_eliminar" invisible="extraordinario==False" type="object" tabindex="-1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                        
+                        <group string="Extraordinarios" class="mt-3 text-bg-secondary">
+                            <group col="3" colspan="2">
+                                <group col="3" colspan="2">
+                                    <group>
+                                        <field name="importe_extraordinario" string="Importe"/>
+                                    </group>
+                                    <group colspan="2">
+                                        <field name="concepto_extraordinario" string="Concepto"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <button name="action_add_extraordinario" colspan="2" icon="fa-plus-circle" string="Añadir extraordinario" class="btn btn-outline-dark float-end" type="object"/>
+                                </group>
+                            </group>
+                        </group>
+                        
+                        <footer class="d-inline-block">
+                            <button string="Procesar" type="object" icon="fa-check-square-o" name="action_procesar" class="btn-success" invisible="state == 'processed'"/>
+                            <button string="Guardar y cerrar" class="btn-primary float-end" special="save" data-hotkey="z"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_extracto_linea_distribucion" model="ir.actions.act_window">
+            <field name="name">Distribución del pago</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">extractos.extracto_linea</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_extracto_linea_distribucion_form"/>
+            <field name="target">new</field>
+            <field name="context">{'dialog_size': 'large'}</field>
+        </record>
+    </data>
+</odoo>
+
