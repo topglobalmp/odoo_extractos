@@ -570,10 +570,10 @@ class ExtractosExtracto(models.Model):
                 'intervinientes': intervinientes
             })
         
-        # Preparar datos de conceptos (líneas pendientes)
-        conceptos_data = []
+        # Preparar datos de movimientos (líneas pendientes)
+        movimientos_data = []
         for linea in count_lineas_pendientes:
-            conceptos_data.append({
+            movimientos_data.append({
                 'id': linea.id,
                 'concepto': linea.concepto or '',
                 'observaciones': linea.observaciones or '',
@@ -581,37 +581,28 @@ class ExtractosExtracto(models.Model):
                 'fecha': str(linea.fecha) if linea.fecha else '',
             })
         
-        # Construir prompt para ChatGPT
-        system_prompt = """Eres un asistente experto en asociar pagos bancarios con préstamos hipotecarios.
-        Tu tarea es analizar conceptos de pagos y asociarlos con operaciones basándote en los nombres de los intervinientes.
-        Los nombres pueden estar escritos de forma diferente (con o sin acentos, mayúsculas/minúsculas, abreviaciones, etc.).
-        Debes devolver SOLO un JSON válido con la siguiente estructura:
-        {
-        "asociaciones": [
-            {"concepto_id": <id_del_concepto>, "operacion_id": <id_de_la_operacion>},
-            ...
-        ]
+        # Preparar variables para el prompt configurado
+        # El prompt espera: num_movimientos, num_prestamos, prestamos, movimientos
+        prompt_variables = {
+            'num_movimientos': str(len(movimientos_data)),
+            'num_prestamos': str(len(operaciones_data)),
+            'prestamos': json.dumps(operaciones_data, ensure_ascii=False),
+            'movimientos': json.dumps(movimientos_data, ensure_ascii=False)
         }
-        Si no puedes asociar un concepto con certeza, no lo incluyas en la respuesta."""
         
-        user_prompt = f"""Tengo {len(conceptos_data)} conceptos de pago y {len(operaciones_data)} operaciones.
-
-        OPERACIONES:
-        {json.dumps(operaciones_data, indent=2, ensure_ascii=False)}
-
-        CONCEPTOS:
-        {json.dumps(conceptos_data, indent=2, ensure_ascii=False)}
-
-        Por favor, asocia cada concepto con la operación correspondiente basándote en los nombres de los intervinientes.
-        Los nombres pueden estar escritos de forma diferente, así que busca similitudes y coincidencias.
-        Devuelve SOLO el JSON con las asociaciones, sin texto adicional."""
-        # Llamar al servicio de ChatGPT
+        # Obtener ID del prompt configurado desde parámetros del sistema
+        ICP = self.env['ir.config_parameter'].sudo()
+        prompt_id = ICP.get_param('extractos.ia_prompt_id', 'pmpt_692f0f7fbb4481938878cf99b3ee07a9016cc5e4ae5ce838')
+        prompt_version = ICP.get_param('extractos.ia_prompt_version', '1')
+        
+        # Llamar al servicio de ChatGPT con prompt configurado
         try:
             chatgpt_service = self.env['chatgpt.service']
-            response = chatgpt_service.send_message(
-                message=user_prompt,
-                system_prompt=system_prompt,
-                max_completion_tokens=4000
+            response = chatgpt_service.send_message_with_prompt(
+                prompt_id=prompt_id,
+                prompt_version=prompt_version,
+                variables=prompt_variables,
+                max_output_tokens=4000
             )
             
             if not response.get('success'):
